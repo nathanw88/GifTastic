@@ -1,9 +1,9 @@
 $(document).on("click", ".city", function() {
   console.log("click");
-  var city = $(this).attr("data-name");
+  var topic = $(this).attr("data-name");
   var queryURL =
     "https://api.giphy.com/v1/gifs/search?q=" +
-    city +
+    topic +
     "&api_key=dc6zaTOxFJmzC&limit=10";
 
   $.ajax({
@@ -22,17 +22,19 @@ $(document).on("click", ".city", function() {
       console.log(results[i].rating);
       var cityImage = $("<img>");
 
-      // data-still="https://media2.giphy.com/media/8rFQp4kHXJ0gU/200_s.gif"
-      // data-animate="https://media2.giphy.com/media/8rFQp4kHXJ0gU/200.gif"
-      // data-state="still"
+      cityDiv.addClass("col-4-md");
 
-      cityImage.attr("src", results[i].images.fixed_width.url);
+      cityImage.attr("src", results[i].images.fixed_width_still.url);
 
-      cityImage.addClass("col-4-md");
+      cityImage.attr("data-still", results[i].images.fixed_width_still.url);
+
+      cityImage.attr("data-animate", results[i].images.fixed_width.url);
+
+      cityImage.attr("data-state", "still");
 
       cityDiv.html(cityImage);
 
-      cityDiv.prepend(p);
+      cityDiv.append(p);
 
       $("#gifs-appear-here").prepend(cityDiv);
     }
@@ -56,15 +58,34 @@ function renderButtons() {
 }
 $("#add-city").on("click", function(event) {
   event.preventDefault();
-  // This line of code will grab the input from the textbox
+
   var city = $("#city-input")
     .val()
     .trim();
 
-  // The city from the textbox is then added to our array
   cities.push(city);
 
-  // Calling renderButtons which handles the processing of our city array
   renderButtons();
+});
+$(document).on("click", "img", function() {
+  var state = "";
+  state = $(this).data("state");
+
+  console.log(state);
+
+  switch (state) {
+    case "still":
+      $(this).attr("src", $(this).data("animate"));
+      $(this).attr("data-state", "animate");
+      console.log($(this).data("state"));
+      console.log($(this).attr("data-state"));
+      console.log($(this));
+      break;
+    case "animate":
+      console.log(state);
+      $(this).attr("src", $(this).data("still"));
+      $(this).attr("data-state", "still");
+      break;
+  }
 });
 renderButtons();
